@@ -17,9 +17,9 @@ function App() {
   const [value, setValue] = useState("");
   const { speak } = useSpeechSynthesis();
 
-useEffect(() => {
- console.log("note: ", note)
-}, [note])
+// useEffect(() => {
+//  console.log("note: ", note)
+// }, [note])
 
 
   useEffect(() => {
@@ -41,20 +41,20 @@ useEffect(() => {
       };
     } else {
       mic.stop();
-      mic.onend = () => {
-        console.log("Stopped Mic on Click");
-      };
+      // mic.onend = () => {
+      //   console.log("Stopped Mic on Click");
+      // };
     }
-    mic.onstart = () => {
-      console.log("Mics on");
-    };
+    // mic.onstart = () => {
+    //   console.log("Mics on");
+    // };
 
     mic.onresult = (event) => {
       const transcript = Array.from(event.results)
         .map((result) => result[0])
         .map((result) => result.transcript)
         .join("");
-      console.log(transcript);
+      // console.log(transcript);
       setNote(transcript);
       setValue(transcript);
       mic.onerror = (event) => {
