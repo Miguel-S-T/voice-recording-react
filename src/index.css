@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #e5e6e6 ;
 }
 
 code {
@@ -24,6 +25,7 @@ code {
   margin: 30px;
   padding: 20px;
   border-radius: 5px;
+  background-color: white;
 }
 
 .box-2 {
@@ -32,6 +34,7 @@ code {
   margin: 30px;
   padding: 20px;
   border-radius: 5px;
+  background-color: white;
 }
 
 h1 {
