@@ -12,29 +12,32 @@ mic.lang = "en-US";
 
 function App() {
   const [isListening, setIsListening] = useState(false);
-  const [note, setNote] = useState(null);
+  const [note, setNote] = useState("");
   const [savedNotes, setSavedNotes] = useState([]);
-  const [value, setValue] = useState("");
+  // const [value, setValue] = useState("");
   const { speak } = useSpeechSynthesis();
 
-// useEffect(() => {
-//  console.log("note: ", note)
-// }, [note])
-
-
   useEffect(() => {
-    const storedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+    const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
     setSavedNotes(storedNotes);
   }, []);
 
-// listening to new notes. 
   useEffect(() => {
     handleListen();
   }, [isListening]);
 
   const handleListen = () => {
     if (isListening) {
-      mic.start();
+      try {
+        mic.start();
+      } catch (error) {
+        if (error.name === "InvalidStateError") {
+          console.log("Speech recognition is already running.");
+        } else {
+          console.error("Error starting speech recognition:", error);
+        }
+      }
+
       mic.onend = () => {
         // console.log("continue..");
         mic.start();
@@ -45,6 +48,7 @@ function App() {
       //   console.log("Stopped Mic on Click");
       // };
     }
+
     // mic.onstart = () => {
     //   console.log("Mics on");
     // };
@@ -54,9 +58,10 @@ function App() {
         .map((result) => result[0])
         .map((result) => result.transcript)
         .join("");
-      // console.log(transcript);
+
       setNote(transcript);
-      setValue(transcript);
+      // setValue(transcript);
+
       mic.onerror = (event) => {
         console.log(event.error);
       };
@@ -64,8 +69,6 @@ function App() {
   };
 
   const handleSaveNote = () => {
-    // setSavedNotes([...savedNotes, note]);
-    // setNote("");
     if (note.trim()) {
       const updatedNotes = [...savedNotes, note];
       setSavedNotes(updatedNotes);
@@ -76,59 +79,93 @@ function App() {
 
   return (
     <>
-    <div style={{display: "flex", justifyContent: "center", marginTop: "1rem"}}>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+      <div style={{
+        boxShadow: "-4px 5px 15px -1px rgba(0, 0, 0, 0.75)", 
+        height: "4.5rem",
+        padding: "0.2rem 2rem",
+        background: "white",
+        borderRadius: "5px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
       <h1>Voice Notes</h1>
       </div>
-      <div className='container'>
-        <div className='box' >
-          <div style={{ textAlign: "center"}}>
+      
+      </div>
+      <div className="container">
+        <div className="box">
+          <div style={{ textAlign: "center" }}>
             <h2>New Note</h2>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", 
-           height: "3rem"}}>
-            <span>{isListening ?  "🛑 Recording..."  : "🎙 Press Start to Record"}</span>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "3rem",
+              }}
+            >
+              <span>{isListening ? "🛑 Recording..." : "🎙 Press Start to Record"}</span>
             </div>
-          
           </div>
 
-          <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem"}}>
-          {/* <button onClick={() => speak({ text: value })}>Speak</button> */}
-          <button  style={{
-              backgroundColor: isListening ? "red" : "initial",
-              color: isListening ? "white" : "initial",
-              cursor: "pointer",
-            }}
-             onClick={() => setIsListening((prevState) => !prevState)}>
-            Start/Stop
-          </button>
-          <button onClick={handleSaveNote} disabled={!note}>
-            Save Note
-          </button>
-       
-
-      
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+            <button
+              style={{
+                backgroundColor: isListening ? "red" : "initial",
+                color: isListening ? "white" : "initial",
+                cursor: "pointer",
+              }}
+              onClick={() => setIsListening((prevState) => !prevState)}
+            >
+              Start/Stop
+            </button>
+            <button
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={handleSaveNote}
+              disabled={!note}
+            >
+              Save Note
+            </button>
           </div>
-          <div>
-          {/* <p value={value} onChange={(event) => setValue(event.target.value)} /> */}
-
-          <p>{note}</p>
-          </div>
-        </div>
-        <div className='box-2'>
-        <div style={{ textAlign: "center"}}>
-        <h2>Notes</h2>
-        </div>
-      
-          <div style={{ display: "flex", justifyContent: "start", 
-           height: "3rem"}}>
-           <ul>
-            {savedNotes.length > 0 ? (
-            savedNotes.map((n, index) => <li key={index} style={{ marginTop: "0.5rem"}}>{n}</li>)
-          ) : (
-            <p>No saved notes yet.</p>
-          )}
-          </ul>
-            </div>
          
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+            {/* Editable textarea for the note */}
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)} // Update note on change
+              style={{
+                width: "100%",
+                minHeight: "5rem",
+                padding: "10px",
+                borderRadius: "5px",
+                border: "2px solid #9ca0a0",
+                fontFamily: " sans-serif",
+                fontSize: "16px"
+              }}
+            />
+          </div>
+        </div>
+        <div className="box-2">
+          <div style={{ textAlign: "center" }}>
+            <h2>Notes</h2>
+          </div>
+          <div style={{ display: "flex", justifyContent: "start", height: "3rem" }}>
+            <ul>
+              {savedNotes.length > 0 ? (
+                savedNotes.map((n, index) => (
+                  <li key={index} style={{ marginTop: "0.5rem" }}>
+                    {n}
+                  </li>
+                ))
+              ) : (
+                <p>No saved notes yet.</p>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
     </>
