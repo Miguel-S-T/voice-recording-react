@@ -77,6 +77,12 @@ function App() {
     }
   };
 
+  const deleteSingleNote = (index) => {
+    const newSavedNotes = savedNotes.filter((n, i) => i !== index )
+    setSavedNotes(newSavedNotes);
+    localStorage.setItem("notes", JSON.stringify(newSavedNotes)); // Save notes to local storage
+  }
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
@@ -153,18 +159,32 @@ function App() {
           <div style={{ textAlign: "center" }}>
             <h2>Notes</h2>
           </div>
-          <div style={{ display: "flex", justifyContent: "start", height: "3rem" }}>
-            <ul>
+          <div style={{ height: "100%", width: "100%" }}>
+            <ol>
               {savedNotes.length > 0 ? (
-                savedNotes.map((n, index) => (
-                  <li key={index} style={{ marginTop: "0.5rem" }}>
-                    {n}
-                  </li>
-                ))
+                savedNotes.map((n, index) => {
+
+                  return (
+                    (
+                      <div key={index} style={{ display: "flex", justifyContent: "space-between", 
+                      alignItems: "center", 
+                      width: "100%"}}>
+                      <li  style={{ marginTop: "0.5rem" }}>
+                     {n} 
+                      </li>
+                        <button
+                        style={{padding: "6px", 
+                        cursor: "pointer"}}
+                         onClick={() => deleteSingleNote(index)}>🗑️</button>
+                      </div>
+                 
+                )
+                  )
+                })
               ) : (
                 <p>No saved notes yet.</p>
               )}
-            </ul>
+            </ol>
           </div>
         </div>
       </div>
